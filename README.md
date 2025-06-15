@@ -2,7 +2,7 @@
 
 *Next.js · Tailwind CSS · MongoDB*
 
-**Duration: 8 hours**
+**Duration: 24 hours**
 
 ---
 
@@ -87,4 +87,4 @@ distinguish exceptional entries.
 
 ### Submission Deadline
 
-Push your final commit within the 8‑hour window that starts at your first commit/fork timestamp.
+Push your final commit within the 24‑hour window that starts at your first commit/fork timestamp.
