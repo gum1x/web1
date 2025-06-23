@@ -5,7 +5,7 @@ import { Connection, connect } from "mongoose";
 const MONGO_URI = process.env.MONGO_URI;
 
 if (!MONGO_URI) {
-  throw new Error("Please define the MONGODB_URI environment variable inside .env.local");
+  throw new Error("Please define the MONGO_URI environment variable inside .env.local");
 }
 
 interface MongooseCache {
@@ -19,15 +19,19 @@ declare global {
 
 global.mongooseCache = global.mongooseCache || { conn: null, promise: null };
 
+let connection: Connection | null = null;
+
 export async function connectDB(): Promise<Connection> {
-  if (global.mongooseCache.conn) {
-    return global.mongooseCache.conn;
+  if (connection) {
+    return connection;
   }
 
-  if (!global.mongooseCache.promise) {
-    global.mongooseCache.promise = connect(MONGO_URI!).then();
+  try {
+    const mongooseInstance = await connect(MONGO_URI!);
+    connection = mongooseInstance.connection;
+    return connection;
+  } catch (error) {
+    console.error("Failed to connect to MongoDB:", error);
+    throw new Error("Database connection failed");
   }
-
-  global.mongooseCache.conn = await global.mongooseCache.promise;
-  return global.mongooseCache.conn;
 }
