@@ -21,23 +21,8 @@
     "allowImportingTsExtensions": true,
     "baseUrl": "./",
     "paths": {
-      "@components/*": [
-        "src/components/*"
-      ],
-      "@libs/*": [
-        "src/libs/*"
-      ],
-      "@models/*": [
-        "src/libs/db/models/*"
-      ],
-      "@type/*": [
-        "src/type/*"
-      ],
-      "@contexts/*": [
-        "src/contexts/*"
-      ],
-      "@hooks/*": [
-        "src/hooks/*"
+      "@/*": [
+        "src/*"
       ]
     },
     "plugins": [
@@ -54,6 +39,6 @@
   ],
   "exclude": [
     "node_modules",
-    ".next",
+    ".next"
   ]
 }
