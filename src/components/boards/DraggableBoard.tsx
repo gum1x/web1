@@ -69,16 +69,20 @@ export function DraggableBoard({ board, onBoardUpdate }: DraggableBoardProps) {
     } else if (isDraggingCard) {
       const activeCard = findCardById(board, activeId);
       const overCard = findCardById(board, overId);
+      const overList = findListByCardId(board, overId);
 
-      if (activeCard && overCard) {
+      if (activeCard && overList) {
         const activeList = findListByCardId(board, activeId);
-        const overList = findListByCardId(board, overId);
 
-        if (activeList && overList) {
+        if (activeList) {
           const oldListId = String(activeList._id);
           const newListId = String(overList._id);
           const oldIndex = activeList.cards.findIndex((card) => String(card._id) === activeId);
-          const newIndex = overList.cards.findIndex((card) => String(card._id) === overId);
+
+          let newIndex = overList.cards.length;
+          if (overCard) {
+            newIndex = overList.cards.findIndex((card) => String(card._id) === overId);
+          }
 
           if (oldListId === newListId && oldIndex !== newIndex) {
             try {
@@ -97,7 +101,26 @@ export function DraggableBoard({ board, onBoardUpdate }: DraggableBoardProps) {
               console.error("Failed to update card order:", error);
             }
           } else if (oldListId !== newListId) {
-            console.log("Card moved between lists - not implemented yet");
+            try {
+              await updateCardOrder(String(board._id), oldListId, activeId, newIndex);
+
+              const updatedBoard = { ...board };
+
+              const oldListIndex = updatedBoard.lists.findIndex((list) => String(list._id) === oldListId);
+              const newListIndex = updatedBoard.lists.findIndex((list) => String(list._id) === newListId);
+
+              if (oldListIndex !== -1 && newListIndex !== -1) {
+                const [movedCard] = updatedBoard.lists[oldListIndex].cards.splice(oldIndex, 1);
+                updatedBoard.lists[newListIndex].cards.splice(newIndex, 0, movedCard);
+
+                updatedBoard.lists[oldListIndex].cards = updatedBoard.lists[oldListIndex].cards.map((card, index) => ({ ...card, order: index })) as ICard[];
+                updatedBoard.lists[newListIndex].cards = updatedBoard.lists[newListIndex].cards.map((card, index) => ({ ...card, order: index })) as ICard[];
+
+                onBoardUpdate(updatedBoard as IBoard);
+              }
+            } catch (error) {
+              console.error("Failed to move card between lists:", error);
+            }
           }
         }
       }
@@ -143,18 +166,18 @@ export function DraggableBoard({ board, onBoardUpdate }: DraggableBoardProps) {
       <DragOverlay>
         {activeItem ? (
           activeItem.type === "list" ? (
-            <div className="bg-card border border-border rounded-lg p-4 w-80 shadow-lg opacity-90">
+            <div className="boardhub-list boardhub-drag-overlay">
               <h3 className="font-semibold text-foreground mb-2">{activeItem.item.title}</h3>
               <div className="space-y-2">
                 {activeItem.item.cards.map((card) => (
-                  <div key={String(card._id)} className="bg-background border border-border rounded p-3">
+                  <div key={String(card._id)} className="boardhub-card">
                     <p className="text-sm text-foreground">{card.title}</p>
                   </div>
                 ))}
               </div>
             </div>
           ) : (
-            <div className="bg-card border border-border rounded-lg p-3 w-72 shadow-lg opacity-90">
+            <div className="boardhub-card boardhub-drag-overlay" style={{ width: 288 }}>
               <p className="font-medium text-foreground">{activeItem.item.title}</p>
               {activeItem.item.description && <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{activeItem.item.description}</p>}
             </div>

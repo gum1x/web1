@@ -26,15 +26,7 @@ export function DraggableCard({ card, listId }: DraggableCardProps) {
   };
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
-      className={`bg-card border border-border rounded-lg p-3 mb-2 cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow ${
-        isDragging ? "opacity-50" : ""
-      }`}
-    >
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners} className={`boardhub-card${isDragging ? " dragging" : ""}`}>
       <h4 className="font-medium text-foreground mb-1">{card.title}</h4>
       {card.description && <p className="text-sm text-muted-foreground line-clamp-2">{card.description}</p>}
     </div>

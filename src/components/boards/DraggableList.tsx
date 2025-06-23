@@ -31,7 +31,7 @@ export function DraggableList({ list, boardId }: DraggableListProps) {
   };
 
   return (
-    <div ref={setNodeRef} style={style} className={`bg-card border border-border rounded-lg p-4 w-80 flex-shrink-0 ${isListDragging ? "opacity-50" : ""}`}>
+    <div ref={setNodeRef} style={style} className={`boardhub-list flex-shrink-0${isListDragging ? " dragging" : ""}`}>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <button {...attributes} {...listeners} className="p-1 hover:bg-muted rounded cursor-grab active:cursor-grabbing">
@@ -42,7 +42,7 @@ export function DraggableList({ list, boardId }: DraggableListProps) {
         <span className="text-sm text-muted-foreground">{list.cards.length} cards</span>
       </div>
 
-      <div className="space-y-2 mb-4">
+      <div className="mb-4">
         <SortableContext items={list.cards.map((card) => String(card._id))} strategy={verticalListSortingStrategy}>
           {list.cards.map((card) => (
             <DraggableCard key={String(card._id)} card={card} listId={String(list._id)} />
